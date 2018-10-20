@@ -36,16 +36,20 @@ def post_list(request):
         post.obj2 = obj2['translations'][0]['translation']
         post.w_count = obj2['word_count']
         post.c_count = obj2['character_count']
-
         tone_input = ToneInput(post.text)
         tone = service.tone(tone_input=tone_input, content_type="application/json")
         tone2 = str(tone)
-        post.tone3 = (tone2[1:500])
+        print(tone2)
+        post.tone3 = ""
         #print(post.tone3)
         temp = json.loads(tone2)
-        info = temp['result']['document_tone']['tones'][0]
-        post.tone3 = 'Tone name: '+ info['tone_name'] +'\t'+ '|\tScore: '+ str(info['score'])
-        #print(temp['result']['document_tone']['tones'])
+        if(len(temp['result']['document_tone']['tones'])>0):
+            temp2 = temp['result']['document_tone']['tones']
+            for x in temp2:
+                post.tone3 += 'Tone name: '+ x['tone_name'] + '\t'+ '|\tScore: '+str(x['score'])+'\r'
+        else:
+            post.tone3 = 'Tone name: n/a\t|\tScore: n/a'
+
 
     return render(request, 'blog/post_list.html', {'posts': posts})
 
